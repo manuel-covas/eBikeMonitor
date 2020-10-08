@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_speed"
+        android:icon="@drawable/ic_twotone_timer_24px"
+        android:title="@string/title_speed" />
+
+    <item
+        android:id="@+id/navigation_power"
+        android:icon="@drawable/ic_twotone_bolt_24px"
+        android:title="@string/title_power" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_twotone_settings_24dp"
+        android:title="@string/title_settings" />
+
+</menu>

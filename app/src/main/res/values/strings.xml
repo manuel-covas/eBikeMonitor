@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">eBike Monitor</string>
+    <string name="title_speed">Speed</string>
+    <string name="title_power">Power</string>
+    <string name="title_settings">Settings</string>
+
+    <string name="authorization_key_info_message">Unlocking or changing settings over BLE requires authentication in the form of an RSA signature.\nUse this field to enter the private key, unencrypted, of the keypair used for signing.\nBuild the firmware with the public key.</string>
+
+    <string name="bluetooth_denied">Bluetooth not enabled.</string>
+    <string name="location_denied">Location was denied.</string>
+    <string name="noBLE_dialog_title">Bluetooth LE not supported</string>
+    <string name="noBLE_dialog_body">This device does not support Bluetooth Low Energy and can\'t be used to monitor the bicycle.</string>
+
+    <string name="device_disconnected">Disconnected from device.</string>
+</resources>
