@@ -16,12 +16,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String SHARED_PREFERENCES_NAME = "eBikeMonitor_shared_preferences";
 
     ConstraintLayout speedTab, powerTab, settingsTab;
     BottomNavigationView bottomBar;
 
-    AlertDialog authenticationKeyInfoDialog;
-    FloatingActionButton authenticationKeyInfo;
     EditText authenticationKeyEditText;
     AuthenticationKey authenticationKey;
 
@@ -50,10 +49,6 @@ public class MainActivity extends AppCompatActivity {
         authenticationKeyEditText.setHorizontallyScrolling(true);
         authenticationKeyEditText.setMovementMethod(new ScrollingMovementMethod());
         authenticationKeyEditText.addTextChangedListener(authenticationKey);
-        authenticationKeyInfoDialog = new AlertDialog.Builder(this).setMessage(R.string.authorization_key_info_message).setTitle("Authentication Key").setPositiveButton("OK", null).create();
-        authenticationKeyInfo = findViewById(R.id.authentication_key_info);
-        authenticationKeyInfo.setOnClickListener(onAuthenticationKeyInfoClick);
-
     }
 
 
@@ -89,14 +84,4 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     };
-
-
-    View.OnClickListener onAuthenticationKeyInfoClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            authenticationKeyInfoDialog.show();
-        }
-    };
-
-
 }

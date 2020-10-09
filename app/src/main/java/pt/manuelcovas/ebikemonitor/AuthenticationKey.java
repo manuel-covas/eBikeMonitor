@@ -1,6 +1,8 @@
 package pt.manuelcovas.ebikemonitor;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,7 +10,10 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,32 +31,67 @@ public class AuthenticationKey implements TextWatcher {
     EditText authenticationKeyEditText;
 
     String errorMessage = "No value.";
-    AlertDialog errorDialog;
+    AlertDialog errorDialog, authenticationKeyInfoDialog;
     Button authenticationKeySave;
-    FloatingActionButton authenticationKeyError;
+    FloatingActionButton authenticationKeyInfo, authenticationKeyShow, authenticationKeyError;
     Drawable checkDrawable, errorDrawable;
     int colorCheck, colorError;
     boolean shown = false;
 
-    PrivateKey key;
+    BiometricPrompt biometricPrompt;
+    SharedPreferences sharedPreferences;
+    String keyText;
+    PrivateKey key; boolean keyValid = false;
     Signature signature;
 
 
-    public AuthenticationKey(MainActivity mainActivity) {
+    public AuthenticationKey(final MainActivity mainActivity) {
 
-        authenticationKeyEditText = mainActivity.findViewById(R.id.authentication_key_edittext);
-        authenticationKeyError = mainActivity.findViewById(R.id.authentication_key_error);
-        authenticationKeySave = mainActivity.findViewById(R.id.authentication_key_save);
+        sharedPreferences = mainActivity.getSharedPreferences(MainActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         errorDialog = new AlertDialog.Builder(mainActivity).setTitle("Authentication Key").setPositiveButton("OK", null).create();
+        authenticationKeyInfoDialog = new AlertDialog.Builder(mainActivity).setMessage(R.string.authorization_key_info_message).setTitle("Authentication Key").setPositiveButton("OK", null).create();
+
+        authenticationKeyInfo = mainActivity.findViewById(R.id.authentication_key_info);
+        authenticationKeyInfo.setOnClickListener(onAuthenticationKeyInfoClick);
+        authenticationKeyShow = mainActivity.findViewById(R.id.authentication_key_show);
+        authenticationKeyShow.setOnClickListener(showAuthenticationKey);
+        authenticationKeyEditText = mainActivity.findViewById(R.id.authentication_key_edittext);
+        authenticationKeySave = mainActivity.findViewById(R.id.authentication_key_save);
+        authenticationKeySave.setOnClickListener(saveAuthenticationKey);
+        authenticationKeyError = mainActivity.findViewById(R.id.authentication_key_error);
         authenticationKeyError.setOnClickListener(showErrorDialog);
 
-        checkDrawable = mainActivity.getDrawable(R.drawable.ic_round_check_circle_24px);
-        errorDrawable = mainActivity.getDrawable(R.drawable.ic_round_error_24px);
+        checkDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.ic_round_check_circle_24px);
+        errorDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.ic_round_error_24px);
         colorCheck = ContextCompat.getColor(mainActivity, R.color.colorAccent);
         colorError = ContextCompat.getColor(mainActivity, R.color.alertRed);
 
         executor = mainActivity.getMainExecutor();
+
+        biometricPrompt = new BiometricPrompt(mainActivity, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(mainActivity, "Authentication failed:\n" + errString, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                Toast.makeText(mainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show();
+                authenticationKeyEditText.setText(keyText);
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(mainActivity, "Authentication failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        loadSavedKey();
 
         try {
             signature = Signature.getInstance("SHA256withRSA");
@@ -60,6 +100,41 @@ public class AuthenticationKey implements TextWatcher {
         }
     }
 
+
+    private void loadSavedKey() {
+        if (sharedPreferences.contains("authenticationKey")) {
+            keyText = sharedPreferences.getString("authenticationKey", "Failed to load saved key.");
+            afterTextChanged(Editable.Factory.getInstance().newEditable(keyText));
+        }
+    }
+
+
+    View.OnClickListener onAuthenticationKeyInfoClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            authenticationKeyInfoDialog.show();
+        }
+    };
+    View.OnClickListener showAuthenticationKey = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            androidx.biometric.BiometricPrompt.PromptInfo promptInfo = new androidx.biometric.BiometricPrompt.PromptInfo.Builder()
+                .setTitle("System Authentication")
+                .setSubtitle("Provide credentials to show the stored private key.")
+                .setDeviceCredentialAllowed(true)
+                .build();
+            biometricPrompt.authenticate(promptInfo);
+        }
+    };
+
+
+    View.OnClickListener saveAuthenticationKey = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            keyText = authenticationKeyEditText.getText().toString();
+            sharedPreferences.edit().putString("authenticationKey", keyText).apply();
+        }
+    };
     View.OnClickListener showErrorDialog = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -68,7 +143,9 @@ public class AuthenticationKey implements TextWatcher {
         }
     };
 
+
     private void setInputValidity(final boolean valid, final String message) {
+        keyValid = valid;
 
         errorMessage = message;
         executor.execute(new Runnable() {
@@ -85,8 +162,6 @@ public class AuthenticationKey implements TextWatcher {
         });
     }
 
-
-
     @Override
     public void afterTextChanged(Editable s) {
         try {
@@ -102,11 +177,7 @@ public class AuthenticationKey implements TextWatcher {
         }
     }
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-    }
+    public void onTextChanged(CharSequence s, int start, int before, int count) {}
 }
