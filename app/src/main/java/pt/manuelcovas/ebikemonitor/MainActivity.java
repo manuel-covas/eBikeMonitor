@@ -1,10 +1,15 @@
 package pt.manuelcovas.ebikemonitor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.AlertDialog;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.MenuItem;
@@ -18,19 +23,24 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String SHARED_PREFERENCES_NAME = "eBikeMonitor_shared_preferences";
 
+
     ConstraintLayout speedTab, powerTab, settingsTab;
     BottomNavigationView bottomBar;
 
     EditText authenticationKeyEditText;
     AuthenticationKey authenticationKey;
 
+    ESPeBikeScan eBikeScanner;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         initUi();
+
+        eBikeScanner = new ESPeBikeScan(this);
     }
 
 
@@ -43,14 +53,12 @@ public class MainActivity extends AppCompatActivity {
         bottomBar.setOnNavigationItemSelectedListener(onBottomBarNavigate);
         bottomBar.setSelectedItemId(R.id.navigation_power);
 
-
         authenticationKeyEditText = findViewById(R.id.authentication_key_edittext);
         authenticationKey = new AuthenticationKey(this);
         authenticationKeyEditText.setHorizontallyScrolling(true);
         authenticationKeyEditText.setMovementMethod(new ScrollingMovementMethod());
         authenticationKeyEditText.addTextChangedListener(authenticationKey);
     }
-
 
     BottomNavigationView.OnNavigationItemSelectedListener onBottomBarNavigate = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -84,4 +92,18 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     };
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        eBikeScanner.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        eBikeScanner.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 }

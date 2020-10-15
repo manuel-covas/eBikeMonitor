@@ -90,7 +90,6 @@ public class AuthenticationKey implements TextWatcher {
             }
         });
 
-
         loadSavedKey();
 
         try {
@@ -104,8 +103,36 @@ public class AuthenticationKey implements TextWatcher {
     private void loadSavedKey() {
         if (sharedPreferences.contains("authenticationKey")) {
             keyText = sharedPreferences.getString("authenticationKey", "Failed to load saved key.");
-            afterTextChanged(Editable.Factory.getInstance().newEditable(keyText));
+            parseKey(keyText);
         }
+    }
+
+
+    private boolean parseKey(String s) {
+        try {
+            String trimmedKey = s.replace("-----BEGIN RSA PRIVATE KEY-----\n", "")
+                    .replace("\n-----END RSA PRIVATE KEY-----", "")
+                    .replace("-----BEGIN PRIVATE KEY-----\n", "")
+                    .replace("\n-----END PRIVATE KEY-----", "");
+            key = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(trimmedKey, Base64.DEFAULT)));
+            keyValid = true;
+            errorMessage = "RSA private key valid.";
+        } catch (Exception e) {
+            keyValid = false;
+            errorMessage = e.getMessage();
+        }
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                authenticationKeyError.setImageDrawable(keyValid ? checkDrawable : errorDrawable);
+                authenticationKeyError.setColorFilter(keyValid ? colorCheck : colorError);
+                if (!shown) {
+                    authenticationKeyError.show();
+                    shown = true;
+                }
+            }
+        });
+        return keyValid;
     }
 
 
@@ -119,8 +146,8 @@ public class AuthenticationKey implements TextWatcher {
         @Override
         public void onClick(View v) {
             androidx.biometric.BiometricPrompt.PromptInfo promptInfo = new androidx.biometric.BiometricPrompt.PromptInfo.Builder()
-                .setTitle("System Authentication")
-                .setSubtitle("Provide credentials to show the stored private key.")
+                .setTitle("View RSA Private Key")
+                .setSubtitle("Authenticate to show stored value.")
                 .setDeviceCredentialAllowed(true)
                 .build();
             biometricPrompt.authenticate(promptInfo);
@@ -133,6 +160,7 @@ public class AuthenticationKey implements TextWatcher {
         public void onClick(View v) {
             keyText = authenticationKeyEditText.getText().toString();
             sharedPreferences.edit().putString("authenticationKey", keyText).apply();
+            authenticationKeySave.setEnabled(false);
         }
     };
     View.OnClickListener showErrorDialog = new View.OnClickListener() {
@@ -144,36 +172,12 @@ public class AuthenticationKey implements TextWatcher {
     };
 
 
-    private void setInputValidity(final boolean valid, final String message) {
-        keyValid = valid;
-
-        errorMessage = message;
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                authenticationKeySave.setEnabled(valid);
-                authenticationKeyError.setImageDrawable(valid ? checkDrawable : errorDrawable);
-                authenticationKeyError.setColorFilter(valid ? colorCheck : colorError);
-                if (!shown) {
-                    authenticationKeyError.show();
-                    shown = true;
-                }
-            }
-        });
-    }
-
     @Override
     public void afterTextChanged(Editable s) {
-        try {
-            String trimmedKey = s.toString().replace("-----BEGIN RSA PRIVATE KEY-----\n", "")
-                                            .replace("\n-----END RSA PRIVATE KEY-----", "")
-                                            .replace("-----BEGIN PRIVATE KEY-----\n", "")
-                                            .replace("\n-----END PRIVATE KEY-----", "");
-            key = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(trimmedKey, Base64.DEFAULT)));
-            setInputValidity(true, "RSA private key valid.");
-
-        } catch (Exception e) {
-            setInputValidity(false, e.getMessage());
+        if (parseKey(s.toString())) {
+            authenticationKeySave.setEnabled(true);
+        }else{
+            authenticationKeySave.setEnabled(false);
         }
     }
     @Override

@@ -11,5 +11,8 @@
     <string name="noBLE_dialog_title">Bluetooth LE not supported</string>
     <string name="noBLE_dialog_body">This device does not support Bluetooth Low Energy and can\'t be used to monitor the bicycle.</string>
 
+    <string name="scan_dialog_scanning">Scanning...</string>
+    <string name="scan_dialog_results_title">Scan Results</string>
+
     <string name="device_disconnected">Disconnected from device.</string>
 </resources>
