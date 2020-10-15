@@ -35,6 +35,7 @@ public class ESPeBikeScan implements DialogInterface.OnDismissListener {
     public static final int REQUEST_GRANT_LOC = 12;
 
     final MainActivity mainActivity;
+    ESPeBikeScan self;
     Executor executor;
     ESPeBike eBike = null;
 
@@ -66,13 +67,15 @@ public class ESPeBikeScan implements DialogInterface.OnDismissListener {
                 if (!requestLocationPermission())
                     return;
 
+                scanDialog = new ScanDialog(mainActivity, self);
                 scanDialog.show();
 
                 ArrayList<ScanFilter> scanFilter = new ArrayList<>();
-                scanFilter.add(new ScanFilter.Builder()/*.setServiceUuid(ParcelUuid.fromString("00002926-0000-1000-8000-00805f9b34fb"))*/.build());
+                scanFilter.add(new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString("00002926-0000-1000-8000-00805f9b34fb")).build());
 
-                bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
-                bluetoothLeScanner.startScan(scanFilter, new ScanSettings.Builder().setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT).setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH).setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE).setReportDelay(0).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(), scanDialog.getScanCallback());
+                if (bluetoothLeScanner == null)
+                    bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
+                bluetoothLeScanner.startScan(/*scanFilter, new ScanSettings.Builder().setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT).setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH).setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE).setReportDelay(0).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(),*/ scanDialog.getScanCallback());
             }
         });
     }
@@ -131,13 +134,12 @@ public class ESPeBikeScan implements DialogInterface.OnDismissListener {
 
 
     public ESPeBikeScan(MainActivity m) {
+        self = this;
         this.mainActivity = m;
         executor = mainActivity.getMainExecutor();
 
         rideButton = mainActivity.findViewById(R.id.ride_button);
         rideButton.setOnClickListener(onRideButtonClick);
-
-        scanDialog = new ScanDialog(mainActivity, this);
 
         //Check for BLE
         if (!mainActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {

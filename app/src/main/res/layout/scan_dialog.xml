@@ -96,13 +96,13 @@
             android:layout_marginEnd="16dp"
             android:fadeScrollbars="false"
             android:fillViewport="false"
-            android:maxHeight="150dp"
+            android:maxHeight="300dp"
             android:minHeight="64dp"
             android:scrollbarAlwaysDrawHorizontalTrack="false"
             android:scrollbarAlwaysDrawVerticalTrack="false"
             app:layout_constrainedHeight="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_max="150dp"
+            app:layout_constraintHeight_max="300dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scab_results_title">
 

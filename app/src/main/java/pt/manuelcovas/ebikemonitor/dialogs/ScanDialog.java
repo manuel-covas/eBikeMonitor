@@ -1,6 +1,7 @@
 package pt.manuelcovas.ebikemonitor.dialogs;
 
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import pt.manuelcovas.ebikemonitor.MainActivity;
 import pt.manuelcovas.ebikemonitor.R;
@@ -37,19 +39,22 @@ public class ScanDialog {
     }
 
 
-    ArrayList<ScanResultEntry> scanResults = new ArrayList<>();
+    HashMap<String, ScanResultEntry> scanResults = new HashMap<>();
 
     ScanCallback scanCallback = new ScanCallback() {
         @Override
-        public void onScanResult(final int callbackType, final ScanResult result)
-        {
-            Toast.makeText(mainActivity, "Result", Toast.LENGTH_SHORT).show();
+        public void onScanResult(final int callbackType, final ScanResult result) {
+
+            String deviceAddress = result.getDevice().getAddress();
+
             if (scanResults.isEmpty()) {
                 scanningRoot.setVisibility(View.GONE);
                 scanResultsRoot.setVisibility(View.VISIBLE);
             }
+            if (!scanResults.containsKey(deviceAddress))
+                scanResults.put(deviceAddress, new ScanResultEntry(mainActivity, scanResultsLayout));
 
-            scanResults.add(new ScanResultEntry(mainActivity, scanResultsLayout));
+            scanResults.get(deviceAddress).update(result);
         }
     };
 
