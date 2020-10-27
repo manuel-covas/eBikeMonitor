@@ -12,7 +12,9 @@
     <string name="noBLE_dialog_body">This device does not support Bluetooth Low Energy and can\'t be used to monitor the bicycle.</string>
 
     <string name="scan_dialog_scanning">Scanning...</string>
+    <string name="scan_dialog_connecting">Connecting...</string>
     <string name="scan_dialog_results_title">Scan Results</string>
+    <string name="scan_dialog_filter_switch">Filter by service UUID</string>
 
     <string name="device_disconnected">Disconnected from device.</string>
 </resources>

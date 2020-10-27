@@ -3,6 +3,7 @@
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#202020</color>
     <color name="colorAccent">#2298FF</color>
+    <color name="colorAccentFaded">#1A2298FF</color>
     <color name="colorAccentDark">#2480D1</color>
     <color name="alertRed">#D12424</color>
     <color name="grey">#6C6C6C</color>

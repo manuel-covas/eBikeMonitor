@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String SHARED_PREFERENCES_NAME = "eBikeMonitor_shared_preferences";
 
+    private static MainActivity single_instance = null;
+    public static MainActivity getInstance() { return single_instance; }
+    public static void setInstance(MainActivity instance) { single_instance = instance; }
 
     ConstraintLayout speedTab, powerTab, settingsTab;
     BottomNavigationView bottomBar;
@@ -32,15 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
     ESPeBikeScan eBikeScanner;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainActivity.setInstance(this);
 
         setContentView(R.layout.activity_main);
         initUi();
 
-        eBikeScanner = new ESPeBikeScan(this);
+        eBikeScanner = new ESPeBikeScan();
     }
 
 
