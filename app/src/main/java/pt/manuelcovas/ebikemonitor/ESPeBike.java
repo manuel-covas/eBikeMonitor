@@ -30,7 +30,6 @@ public class ESPeBike extends BluetoothGattCallback {
         scanResult.getDevice().connectGatt(mainActivity, false, this, BluetoothDevice.TRANSPORT_LE);
     }
 
-
     public boolean isConnected() {
         return connected;
     }
@@ -112,7 +111,8 @@ public class ESPeBike extends BluetoothGattCallback {
         gattClient.setCharacteristicNotification(eBikeTxCharacteristic, true);
         connecting = false;
         connected = true;
-        mainActivity.eBikeScanner.scanDialog.dismiss();
+
+        mainActivity.eBikeScanner.scanDialog.onConnect();
     }
 
 

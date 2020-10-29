@@ -26,7 +26,7 @@ public class ScanDialog implements DialogInterface.OnDismissListener {
     private ScanDialog self;
     private AlertDialog scanDialog;
 
-    private ConstraintLayout scanningRoot, scanResultsRoot;
+    private ConstraintLayout scanningRoot, scanResultsRoot, connectedRoot;
     private TextView scanningText1;
     private Switch scanFilterSwitch;
     private LinearLayout scanResultsLayout; public LinearLayout getScanResultsLayout() { return scanResultsLayout; }
@@ -45,6 +45,7 @@ public class ScanDialog implements DialogInterface.OnDismissListener {
         scanDialog = new AlertDialog.Builder(mainActivity).setView(scanDialogView).setOnDismissListener(this).setCancelable(true).create();
         scanningRoot = scanDialogView.findViewById(R.id.scanning_root);
         scanResultsRoot = scanDialogView.findViewById(R.id.scan_results_root);
+        connectedRoot = scanDialogView.findViewById(R.id.connected_root);
         scanningText1 = scanDialogView.findViewById(R.id.scanning_text1);
         scanFilterSwitch = scanDialogView.findViewById(R.id.scan_filter_switch);
         scanResultsLayout = scanDialogView.findViewById(R.id.scan_results_layout);
@@ -89,7 +90,6 @@ public class ScanDialog implements DialogInterface.OnDismissListener {
     }
     @Override
     public void onDismiss(DialogInterface dialog) {  // Handle dialog dismiss
-        eBikeScan.stopScan();
         eBikeScan.onConnectionSateChange();
     }
 
@@ -130,13 +130,28 @@ public class ScanDialog implements DialogInterface.OnDismissListener {
 
 
     private void connectToSelectedEntry() {
-        eBikeScan.stopScan();
-        scanResultsRoot.setVisibility(View.GONE);
-        scanningRoot.setVisibility(View.VISIBLE);
+        mainActivity.getMainExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                eBikeScan.stopScan();
+                scanResultsRoot.setVisibility(View.GONE);
+                scanningRoot.setVisibility(View.VISIBLE);
 
-        ScanResult scanResult = scanResults.get(selectedDeviceAddress).getScanResult();
+                ScanResult scanResult = scanResults.get(selectedDeviceAddress).getScanResult();
 
-        scanningText1.setText("Connecting to " + scanResult.getDevice().getName() + " (" + selectedDeviceAddress + ")");
-        eBikeScan.connectToScanResult(scanResult);
+                scanningText1.setText("Connecting to " + scanResult.getDevice().getName() + " (" + selectedDeviceAddress + ")");
+                eBikeScan.connectToScanResult(scanResult);
+            }
+        });
+    }
+
+    public void onConnect() {
+        mainActivity.getMainExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                scanningRoot.setVisibility(View.GONE);
+                connectedRoot.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }

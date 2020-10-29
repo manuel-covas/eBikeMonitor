@@ -110,6 +110,7 @@ public class ESPeBikeScan {
     }
 
     public void onConnectionSateChange() {
+        bluetoothLeScanner.stopScan(scanDialog.getScanCallback());
         executor.execute(new Runnable() {
             @Override
             public void run() {

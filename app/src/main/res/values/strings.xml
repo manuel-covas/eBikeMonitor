@@ -13,6 +13,7 @@
 
     <string name="scan_dialog_scanning">Scanning...</string>
     <string name="scan_dialog_connecting">Connecting...</string>
+    <string name="scan_dialog_connected">Connected.</string>
     <string name="scan_dialog_results_title">Scan Results</string>
     <string name="scan_dialog_filter_switch">Filter by service UUID</string>
 
