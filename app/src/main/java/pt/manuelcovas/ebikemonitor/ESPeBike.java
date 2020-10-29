@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.le.ScanResult;
 import android.widget.Toast;
 
@@ -18,11 +19,44 @@ public class ESPeBike extends BluetoothGattCallback {
 
     private MainActivity mainActivity;
     private BluetoothGatt gattClient;
-    private boolean connected = false;
+
+    private boolean connected;
+    private boolean connecting;
 
     public ESPeBike(ScanResult scanResult) {
         mainActivity = MainActivity.getInstance();
+        connected = false;
+        connecting = true;
         scanResult.getDevice().connectGatt(mainActivity, false, this, BluetoothDevice.TRANSPORT_LE);
+    }
+
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void disconnect(boolean showToast, final String reason) {
+        if (gattClient != null) {
+            gattClient.disconnect();
+            gattClient.close();
+        }
+
+        if (connecting) {
+            mainActivity.eBikeScanner.scanDialog.dismiss();
+        }else{
+            mainActivity.eBikeScanner.onConnectionSateChange();
+        }
+
+        connecting = false;
+        connected = false;
+
+        if (showToast)
+            mainActivity.getMainExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mainActivity, reason, Toast.LENGTH_LONG).show();
+                }
+            });
     }
 
 
@@ -32,7 +66,7 @@ public class ESPeBike extends BluetoothGattCallback {
             gattClient = gatt;
             gattClient.discoverServices();
         }else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-            gattClient.close();
+            disconnect(true, "Device disconnected. Status: "+status);
         }
     }
 
@@ -41,19 +75,44 @@ public class ESPeBike extends BluetoothGattCallback {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             gatt.requestMtu(EBIKE_BLE_MTU);
         }else{
-            // Failed
+            disconnect(true, "BLE Service discovery failed. Status: "+status);
         }
     }
 
     @Override
     public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            gattClient.setCharacteristicNotification(gatt.getService(EBIKE_SERVICE_UUID).getCharacteristic(EBIKE_TX_UUID), true);
-            connected = true;
-            mainActivity.eBikeScanner.scanDialog.dismiss();
+            onConnect();
         }else{
-            // Failed
+            disconnect(true, "BLE failed to set connection MTU. Status: "+status);
         }
+    }
+
+    private void onConnect() {
+
+        BluetoothGattService eBikeService = gattClient.getService(EBIKE_SERVICE_UUID);
+        BluetoothGattCharacteristic eBikeTxCharacteristic = (eBikeService == null ? null : eBikeService.getCharacteristic(EBIKE_TX_UUID));
+        BluetoothGattCharacteristic eBikeRxCharacteristic = (eBikeService == null ? null : eBikeService.getCharacteristic(EBIKE_RX_UUID));
+
+        if (eBikeService == null || eBikeTxCharacteristic == null || eBikeRxCharacteristic == null) {
+
+            String message = "This BLE device is incompatible.";
+
+            if (eBikeService == null) {
+                message = message.concat("\nMissing BLE service.");
+            }else{
+                if (eBikeTxCharacteristic == null) message = message.concat("\nMissing ESP-eBike's Tx BLE characteristic.");
+                if (eBikeRxCharacteristic == null) message = message.concat("\nMissing ESP-eBike's Rx BLE characteristic.");
+            }
+
+            disconnect(true, message);
+            return;
+        }
+
+        gattClient.setCharacteristicNotification(eBikeTxCharacteristic, true);
+        connecting = false;
+        connected = true;
+        mainActivity.eBikeScanner.scanDialog.dismiss();
     }
 
 
@@ -63,7 +122,7 @@ public class ESPeBike extends BluetoothGattCallback {
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
             }else{
-                // Failed
+                disconnect(true, "BLE write failed. Status: "+status);
             }
         }
     }
@@ -72,45 +131,5 @@ public class ESPeBike extends BluetoothGattCallback {
         if (characteristic.getUuid().equals(EBIKE_TX_UUID)) {
             // Process new data
         }
-    }
-
-
-
-    private void subscribeValues() {
-      /*List<BluetoothGattCharacteristic> characteristics = gattConnection.getService(BLE_SERVICE_UUID).getCharacteristics();
-        BluetoothGattCharacteristic currentChar;
-        String currentCharUuid;
-
-        for (int i = 0; i < characteristics.size(); i++) {
-            currentChar = characteristics.get(i);
-            currentCharUuid = currentChar.getUuid().toString();
-
-            if (currentCharUuid.equalsIgnoreCase(BLE_AMPS_UUID_STR) ||
-                    currentCharUuid.equalsIgnoreCase(BLE_CELLS_UUID_STR) ||
-                    currentCharUuid.equalsIgnoreCase(BLE_SPEED_UUID_STR) ||
-                    currentCharUuid.equalsIgnoreCase(BLE_SYSTEM_STATUS_UUID_STR) ||
-                    currentCharUuid.equalsIgnoreCase(BLE_THROTTLE_UUID_STR))
-            {
-                gattConnection.setCharacteristicNotification(currentChar, true);
-            }
-
-            if (currentCharUuid.equalsIgnoreCase(BLE_SYSTEM_VALUES_UUID_STR)) {
-                systemValuesChar = currentChar;
-                gattConnection.readCharacteristic(currentChar);
-            }
-        }*/
-    }
-
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void disconnect(int status, String reason) {
-        gattClient.disconnect();
-        gattClient.close();
-
-        if (status != BluetoothGatt.GATT_SUCCESS)
-            Toast.makeText(mainActivity, reason, Toast.LENGTH_LONG).show();
     }
 }

@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -88,13 +87,15 @@ public class ScanDialog implements DialogInterface.OnDismissListener {
     public void dismiss() {
         scanDialog.dismiss();
     }
-    @Override    // Handle dialog dismiss
-    public void onDismiss(DialogInterface dialog) {
-        eBikeScan.stop();
+    @Override
+    public void onDismiss(DialogInterface dialog) {  // Handle dialog dismiss
+        eBikeScan.stopScan();
+        eBikeScan.onConnectionSateChange();
     }
 
 
     ScanCallback scanCallback = new ScanCallback() {
+
         @Override
         public void onScanResult(final int callbackType, final ScanResult result) {
 
@@ -129,11 +130,13 @@ public class ScanDialog implements DialogInterface.OnDismissListener {
 
 
     private void connectToSelectedEntry() {
-        eBikeScan.stop();
+        eBikeScan.stopScan();
         scanResultsRoot.setVisibility(View.GONE);
         scanningRoot.setVisibility(View.VISIBLE);
-        scanningText1.setText(R.string.scan_dialog_connecting);
-        eBikeScan.connectToScanResult(scanResults.get(selectedDeviceAddress).getScanResult());
-        Toast.makeText(mainActivity, "Connecting to "+ selectedDeviceAddress, Toast.LENGTH_SHORT).show();
+
+        ScanResult scanResult = scanResults.get(selectedDeviceAddress).getScanResult();
+
+        scanningText1.setText("Connecting to " + scanResult.getDevice().getName() + " (" + selectedDeviceAddress + ")");
+        eBikeScan.connectToScanResult(scanResult);
     }
 }

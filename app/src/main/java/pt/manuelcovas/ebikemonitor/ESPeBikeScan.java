@@ -100,10 +100,8 @@ public class ESPeBikeScan {
             }
         });
     }
-    public void stop() {
-        rideButton.setEnabled(true);
+    public void stopScan() {
         bluetoothLeScanner.stopScan(scanDialog.getScanCallback());
-        eBike.disconnect(BluetoothGatt.GATT_SUCCESS, "Connection canceled.");
     }
 
 
@@ -111,8 +109,14 @@ public class ESPeBikeScan {
         eBike = new ESPeBike(scanResult);
     }
 
-    public void setConnected(boolean connected) {
-        rideButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(mainActivity, connected? R.color.colorAccent : R.color.grey)));
+    public void onConnectionSateChange() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                rideButton.setEnabled(true);
+                rideButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(mainActivity, (eBike != null && eBike.isConnected()) ? R.color.colorAccent : R.color.grey)));
+            }
+        });
     }
 
 
