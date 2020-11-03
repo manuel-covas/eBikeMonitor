@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import pt.manuelcovas.ebikemonitor.dialogs.ScanDialog;
 
@@ -52,13 +51,14 @@ public class ESPeBikeScan {
 
         rideButton = mainActivity.findViewById(R.id.ride_button);
         rideButton.setOnClickListener(onRideButtonClick);
+        rideButton.setOnLongClickListener(onRideButtonLongClick);
 
         //Check for BLE
         if (!mainActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             new AlertDialog.Builder(mainActivity)
                     .setTitle("Missing Feature")
                     .setMessage("Android reports that this device does not support Bluetooth Low Energy (BLE).\n" +
-                            "This functionality is required in order to communicate with ESP-eBike.")
+                                "This functionality is required in order to communicate with ESP-eBike.")
                     .setPositiveButton("OK", null)
                     .setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @Override
@@ -72,6 +72,7 @@ public class ESPeBikeScan {
         bluetoothAdapter = ((BluetoothManager) mainActivity.getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
     }
 
+
     View.OnClickListener onRideButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -79,8 +80,19 @@ public class ESPeBikeScan {
                 rideButton.setEnabled(false);
                 scan();
             }else{
-                // Switch activity
+                mainActivity.startActivity(new Intent(mainActivity, RidingActivity.class));
             }
+        }
+    };
+
+    View.OnLongClickListener onRideButtonLongClick = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            if (eBike != null && eBike.isConnected()) {
+                eBike.disconnect(true, "Disconnected.");
+                return true;
+            }
+            return false;
         }
     };
 
@@ -111,6 +123,10 @@ public class ESPeBikeScan {
 
     public void onConnectionSateChange() {
         bluetoothLeScanner.stopScan(scanDialog.getScanCallback());
+
+        if (!eBike.isConnected())
+            eBike.disconnect(true, "Cancelled connection.");
+
         executor.execute(new Runnable() {
             @Override
             public void run() {

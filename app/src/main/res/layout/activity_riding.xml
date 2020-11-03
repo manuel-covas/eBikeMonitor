@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RidingActivity">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/speed_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="42dp"
+        android:layout_marginEnd="32dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/press_ripple"
+            android:clickable="true">
+
+            <ImageView
+                android:id="@+id/speed_card_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/throttle_progress"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/speed_text"
+                app:srcCompat="@drawable/ic_full_timer_24px"
+                app:tint="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/speed_units"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="km/h"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="@+id/speed_text"
+                app:layout_constraintStart_toEndOf="@+id/speed_text"
+                app:layout_constraintTop_toTopOf="@+id/speed_text"
+                app:layout_constraintVertical_bias="0.78" />
+
+            <TextView
+                android:id="@+id/speed_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="0.00"
+                android:textColor="@color/text_color_primary"
+                android:textSize="90sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/throttle_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
+                android:indeterminate="false"
+                android:max="10000"
+                android:progress="0"
+                android:progressTint="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/speed_text" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/amps_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/speed_card">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/press_ripple"
+            android:clickable="true">
+
+            <ImageView
+                android:id="@+id/amps_card_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/amps_progress"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/amps_text"
+                app:srcCompat="@drawable/ic_full_bolt_24px"
+                app:tint="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/amps_units"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="A"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="@+id/amps_text"
+                app:layout_constraintStart_toEndOf="@+id/amps_text"
+                app:layout_constraintTop_toTopOf="@+id/amps_text"
+                app:layout_constraintVertical_bias="0.78" />
+
+            <TextView
+                android:id="@+id/amps_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="0.00"
+                android:textColor="@color/text_color_primary"
+                android:textSize="90sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/amps_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
+                android:indeterminate="false"
+                android:max="10000"
+                android:progress="0"
+                android:progressTint="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/amps_text" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/battery_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/pack_level_icon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/pack_percentage"
+                app:layout_constraintEnd_toStartOf="@+id/pack_percentage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/pack_percentage"
+                app:srcCompat="@drawable/ic_full_battery_0_24px"
+                app:tint="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/percentage_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="%"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="@+id/pack_percentage"
+                app:layout_constraintStart_toEndOf="@+id/pack_percentage"
+                app:layout_constraintTop_toTopOf="@+id/pack_percentage"
+                app:layout_constraintVertical_bias="0.78" />
+
+            <TextView
+                android:id="@+id/pack_percentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="0.00"
+                android:textColor="@color/text_color_primary"
+                android:textSize="90sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/battery_card_text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Lowest cell:"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="@+id/battery_card_text2"
+                app:layout_constraintTop_toBottomOf="@+id/pack_percentage" />
+
+            <TextView
+                android:id="@+id/battery_card_text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Highest cell:"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="@+id/battery_card_text3"
+                app:layout_constraintTop_toBottomOf="@+id/battery_card_text1" />
+
+            <TextView
+                android:id="@+id/battery_card_text3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="16dp"
+                android:text="Pack voltage:"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/battery_card_text2" />
+
+            <TextView
+                android:id="@+id/lowest_cell"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text1"
+                app:layout_constraintStart_toStartOf="@+id/highest_cell"
+                app:layout_constraintTop_toTopOf="@+id/battery_card_text1" />
+
+            <TextView
+                android:id="@+id/highest_cell"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text2"
+                app:layout_constraintStart_toStartOf="@+id/pack_voltage_riding"
+                app:layout_constraintTop_toTopOf="@+id/battery_card_text2" />
+
+            <TextView
+                android:id="@+id/pack_voltage_riding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="00.00"
+                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text3"
+                app:layout_constraintStart_toEndOf="@+id/battery_card_text3"
+                app:layout_constraintTop_toTopOf="@+id/battery_card_text3" />
+
+            <TextView
+                android:id="@+id/volts_unit1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="V"
+                app:layout_constraintBottom_toBottomOf="@+id/lowest_cell"
+                app:layout_constraintStart_toEndOf="@+id/lowest_cell"
+                app:layout_constraintTop_toTopOf="@+id/lowest_cell" />
+
+            <TextView
+                android:id="@+id/volts_unit2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="V"
+                app:layout_constraintBottom_toBottomOf="@+id/highest_cell"
+                app:layout_constraintStart_toEndOf="@+id/highest_cell"
+                app:layout_constraintTop_toTopOf="@+id/highest_cell" />
+
+            <TextView
+                android:id="@+id/volts_unit3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="V"
+                app:layout_constraintBottom_toBottomOf="@+id/pack_voltage_riding"
+                app:layout_constraintStart_toEndOf="@+id/pack_voltage_riding"
+                app:layout_constraintTop_toTopOf="@+id/pack_voltage_riding" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/ride_exit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:clickable="true"
+        android:translationZ="7dp"
+        app:backgroundTint="@color/colorAccent"
+        app:elevation="16dp"
+        app:fabCustomSize="64dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/battery_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/battery_card"
+        app:pressedTranslationZ="8dp"
+        app:srcCompat="@drawable/ic_round_motorcycle_24px" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

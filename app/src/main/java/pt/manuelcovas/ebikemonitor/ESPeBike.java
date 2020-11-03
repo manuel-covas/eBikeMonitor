@@ -27,7 +27,7 @@ public class ESPeBike extends BluetoothGattCallback {
         mainActivity = MainActivity.getInstance();
         connected = false;
         connecting = true;
-        scanResult.getDevice().connectGatt(mainActivity, false, this, BluetoothDevice.TRANSPORT_LE);
+        gattClient = scanResult.getDevice().connectGatt(mainActivity, false, this, BluetoothDevice.TRANSPORT_LE);
     }
 
     public boolean isConnected() {
@@ -35,10 +35,14 @@ public class ESPeBike extends BluetoothGattCallback {
     }
 
     public void disconnect(boolean showToast, final String reason) {
+        if (!connected && !connecting) return;
+
         if (gattClient != null) {
             gattClient.disconnect();
             gattClient.close();
         }
+
+        connected = false;
 
         if (connecting) {
             mainActivity.eBikeScanner.scanDialog.dismiss();
@@ -47,7 +51,6 @@ public class ESPeBike extends BluetoothGattCallback {
         }
 
         connecting = false;
-        connected = false;
 
         if (showToast)
             mainActivity.getMainExecutor().execute(new Runnable() {
