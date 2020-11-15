@@ -124,7 +124,7 @@ public class ESPeBikeScan {
     public void onConnectionSateChange() {
         bluetoothLeScanner.stopScan(scanDialog.getScanCallback());
 
-        if (!eBike.isConnected())
+        if (eBike != null && !eBike.isConnected())
             eBike.disconnect(true, "Cancelled connection.");
 
         executor.execute(new Runnable() {

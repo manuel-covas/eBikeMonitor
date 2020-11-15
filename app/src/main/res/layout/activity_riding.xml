@@ -84,7 +84,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/amps_card"
+        android:id="@+id/current_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -103,32 +103,32 @@
             android:clickable="true">
 
             <ImageView
-                android:id="@+id/amps_card_icon"
+                android:id="@+id/current_card_icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/amps_progress"
+                app:layout_constraintBottom_toTopOf="@+id/current_progress"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/amps_text"
+                app:layout_constraintTop_toTopOf="@+id/current_text"
                 app:srcCompat="@drawable/ic_full_bolt_24px"
                 app:tint="@color/colorAccent" />
 
             <TextView
-                android:id="@+id/amps_units"
+                android:id="@+id/current_units"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="A"
                 android:textSize="22sp"
-                app:layout_constraintBottom_toBottomOf="@+id/amps_text"
-                app:layout_constraintStart_toEndOf="@+id/amps_text"
-                app:layout_constraintTop_toTopOf="@+id/amps_text"
+                app:layout_constraintBottom_toBottomOf="@+id/current_text"
+                app:layout_constraintStart_toEndOf="@+id/current_text"
+                app:layout_constraintTop_toTopOf="@+id/current_text"
                 app:layout_constraintVertical_bias="0.78" />
 
             <TextView
-                android:id="@+id/amps_text"
+                android:id="@+id/current_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -141,7 +141,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ProgressBar
-                android:id="@+id/amps_progress"
+                android:id="@+id/current_progress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/amps_text" />
+                app:layout_constraintTop_toBottomOf="@+id/current_text" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -163,6 +163,7 @@
         android:id="@+id/battery_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp"
         app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -213,27 +214,27 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/battery_card_text1"
+                android:id="@+id/battery_card_text_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Lowest cell:"
                 android:textSize="15sp"
-                app:layout_constraintEnd_toEndOf="@+id/battery_card_text2"
+                app:layout_constraintEnd_toEndOf="@+id/battery_card_text_2"
                 app:layout_constraintTop_toBottomOf="@+id/pack_percentage" />
 
             <TextView
-                android:id="@+id/battery_card_text2"
+                android:id="@+id/battery_card_text_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Highest cell:"
                 android:textSize="15sp"
-                app:layout_constraintEnd_toEndOf="@+id/battery_card_text3"
-                app:layout_constraintTop_toBottomOf="@+id/battery_card_text1" />
+                app:layout_constraintEnd_toEndOf="@+id/battery_card_text_3"
+                app:layout_constraintTop_toBottomOf="@+id/battery_card_text_1" />
 
             <TextView
-                android:id="@+id/battery_card_text3"
+                android:id="@+id/battery_card_text_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -243,25 +244,25 @@
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/battery_card_text2" />
+                app:layout_constraintTop_toBottomOf="@+id/battery_card_text_2" />
 
             <TextView
                 android:id="@+id/lowest_cell"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0.00"
-                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text1"
+                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text_1"
                 app:layout_constraintStart_toStartOf="@+id/highest_cell"
-                app:layout_constraintTop_toTopOf="@+id/battery_card_text1" />
+                app:layout_constraintTop_toTopOf="@+id/battery_card_text_1" />
 
             <TextView
                 android:id="@+id/highest_cell"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0.00"
-                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text2"
+                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text_2"
                 app:layout_constraintStart_toStartOf="@+id/pack_voltage_riding"
-                app:layout_constraintTop_toTopOf="@+id/battery_card_text2" />
+                app:layout_constraintTop_toTopOf="@+id/battery_card_text_2" />
 
             <TextView
                 android:id="@+id/pack_voltage_riding"
@@ -269,12 +270,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="00.00"
-                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text3"
-                app:layout_constraintStart_toEndOf="@+id/battery_card_text3"
-                app:layout_constraintTop_toTopOf="@+id/battery_card_text3" />
+                app:layout_constraintBottom_toBottomOf="@+id/battery_card_text_3"
+                app:layout_constraintStart_toEndOf="@+id/battery_card_text_3"
+                app:layout_constraintTop_toTopOf="@+id/battery_card_text_3" />
 
             <TextView
-                android:id="@+id/volts_unit1"
+                android:id="@+id/volts_unit_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="V"
@@ -283,7 +284,7 @@
                 app:layout_constraintTop_toTopOf="@+id/lowest_cell" />
 
             <TextView
-                android:id="@+id/volts_unit2"
+                android:id="@+id/volts_unit_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="V"
@@ -292,7 +293,7 @@
                 app:layout_constraintTop_toTopOf="@+id/highest_cell" />
 
             <TextView
-                android:id="@+id/volts_unit3"
+                android:id="@+id/volts_unit_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="V"

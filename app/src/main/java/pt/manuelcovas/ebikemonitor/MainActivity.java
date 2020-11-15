@@ -1,23 +1,19 @@
 package pt.manuelcovas.ebikemonitor;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.app.AlertDialog;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
     AuthenticationKey authenticationKey;
 
     ESPeBikeScan eBikeScanner;
+    RidingActivity ridingActivity;
+
+    boolean riding = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -108,5 +107,11 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         eBikeScanner.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+    public void setRidingActivity(RidingActivity r) {
+        ridingActivity = r;
+        riding = true;
     }
 }

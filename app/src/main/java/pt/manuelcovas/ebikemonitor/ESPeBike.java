@@ -19,16 +19,29 @@ public class ESPeBike extends BluetoothGattCallback {
 
     private MainActivity mainActivity;
     private BluetoothGatt gattClient;
+    private AuthenticationKey authenticationKey;
 
     private boolean connected;
     private boolean connecting;
+
+    private double speed = 0;
+    private int throttle = 0;
+    private double battery_current = 0;
+    private double battery_charge_left = 0;
+    private double battery_capacity = 0;
+    private double battery_voltage = 0;
+
+    private BatteryCell[] battery_cells;
+
 
     public ESPeBike(ScanResult scanResult) {
         mainActivity = MainActivity.getInstance();
         connected = false;
         connecting = true;
         gattClient = scanResult.getDevice().connectGatt(mainActivity, false, this, BluetoothDevice.TRANSPORT_LE);
+        authenticationKey = mainActivity.authenticationKey;
     }
+
 
     public boolean isConnected() {
         return connected;
@@ -64,7 +77,7 @@ public class ESPeBike extends BluetoothGattCallback {
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, final int newState) {
-        if (newState == BluetoothGatt.STATE_CONNECTED) {
+        if (newState == BluetoothGatt.STATE_CONNECTED && connecting) {
             gattClient = gatt;
             gattClient.discoverServices();
         }else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
