@@ -18,7 +18,10 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -41,7 +44,7 @@ public class AuthenticationKey implements TextWatcher {
     BiometricPrompt biometricPrompt;
     SharedPreferences sharedPreferences;
     String keyText;
-    PrivateKey key; boolean keyValid = false;
+    PrivateKey privateKey; boolean keyValid = false;
     Signature signature;
 
 
@@ -93,9 +96,25 @@ public class AuthenticationKey implements TextWatcher {
         loadSavedKey();
 
         try {
-            signature = Signature.getInstance("SHA256withRSA");
+            signature = Signature.getInstance("NONEwithRSA");
         } catch (Exception e) {
             new AlertDialog.Builder(mainActivity).setMessage("Failed to prepare algorithm SHA256withRSA.\nError: "+e.getMessage()+"\n\nPlatform does not support signing algorithm.\nAuthenticated BLE commands will fail.").setTitle("Error").setPositiveButton("OK", null).create().show();
+        }
+    }
+
+
+    public byte[] signAuthedCommand(byte[] command, byte[] challenge) {
+
+        if (!keyValid)
+            return null;
+
+        try {
+            signature.initSign(privateKey);
+            signature.update(MessageDigest.getInstance("SHA256").digest(ByteBuffer.allocate(command.length + challenge.length).put(command).put(challenge).array()));
+            return signature.sign();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -107,14 +126,13 @@ public class AuthenticationKey implements TextWatcher {
         }
     }
 
-
     private boolean parseKey(String s) {
         try {
             String trimmedKey = s.replace("-----BEGIN RSA PRIVATE KEY-----\n", "")
                     .replace("\n-----END RSA PRIVATE KEY-----", "")
                     .replace("-----BEGIN PRIVATE KEY-----\n", "")
                     .replace("\n-----END PRIVATE KEY-----", "");
-            key = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(trimmedKey, Base64.DEFAULT)));
+            privateKey = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(trimmedKey, Base64.DEFAULT)));
             keyValid = true;
             errorMessage = "RSA private key valid.";
         } catch (Exception e) {

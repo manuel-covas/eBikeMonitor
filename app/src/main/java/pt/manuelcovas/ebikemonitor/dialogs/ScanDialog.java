@@ -6,6 +6,7 @@ import android.bluetooth.le.ScanResult;
 import android.content.DialogInterface;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -64,13 +65,13 @@ public class ScanDialog implements DialogInterface.OnDismissListener {
                 self.connectToSelectedEntry();
             }
         });
-        scanFilterSwitch.setOnClickListener(new View.OnClickListener() {
+        scanFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scanResults.forEach(new BiConsumer<String, ScanResultEntry>() {
                     @Override
                     public void accept(String s, ScanResultEntry scanResultEntry) {
-                        scanResultEntry.filterUUID(scanFilterSwitch.isChecked());
+                        scanResultEntry.filterUUID(isChecked);
                     }
                 });
             }

@@ -1,5 +1,6 @@
 package pt.manuelcovas.ebikemonitor;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -8,7 +9,17 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.le.ScanResult;
 import android.widget.Toast;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import pt.manuelcovas.ebikemonitor.datatypes.ESPeBike.ESPeBikeResponse;
+import pt.manuelcovas.ebikemonitor.datatypes.ESPeBike.ESPeBikeResponseType;
+import pt.manuelcovas.ebikemonitor.datatypes.ESPeBike.SystemStats;
+
 
 public class ESPeBike extends BluetoothGattCallback {
 
@@ -18,8 +29,12 @@ public class ESPeBike extends BluetoothGattCallback {
     private static final int EBIKE_BLE_MTU      = 517;
 
     private MainActivity mainActivity;
-    private BluetoothGatt gattClient;
     private AuthenticationKey authenticationKey;
+
+    private BluetoothGatt gattClient;
+    private BluetoothGattCharacteristic eBikeTxCharacteristic;
+    private BluetoothGattCharacteristic eBikeRxCharacteristic;
+    private ArrayList<ESPeBikeBLECallback> waitingCallbacks;
 
     private boolean connected;
     private boolean connecting;
@@ -32,10 +47,12 @@ public class ESPeBike extends BluetoothGattCallback {
     private double battery_voltage = 0;
 
     private BatteryCell[] battery_cells;
-
+    private SystemStats systemStats;
 
     public ESPeBike(ScanResult scanResult) {
         mainActivity = MainActivity.getInstance();
+        waitingCallbacks = new ArrayList<>();
+
         connected = false;
         connecting = true;
         gattClient = scanResult.getDevice().connectGatt(mainActivity, false, this, BluetoothDevice.TRANSPORT_LE);
@@ -75,6 +92,32 @@ public class ESPeBike extends BluetoothGattCallback {
     }
 
 
+    public void toggleSystemStatsStream(boolean enabled) {
+        eBikeRxCharacteristic.setValue(new byte[] {
+                (byte) ESPeBikeResponseType.EBIKE_COMMAND_SYSTEM_STATS_STREAM.ordinal(),
+                (byte) (enabled ? 0x01 : 0x00)
+        });
+        gattClient.writeCharacteristic(eBikeRxCharacteristic);
+    }
+
+    public void toggleUnlocked(boolean unlocked) {
+        waitingCallbacks.add(new ESPeBikeBLECallback(ESPeBikeResponseType.EBIKE_COMMAND_AUTH_GET_CHALLENGE) {
+            @Override
+            public void run() {
+                byte[] command = {
+                        (byte) ESPeBikeResponseType.EBIKE_COMMAND_AUTHED_COMMAND_TOGGLE_UNLOCK.ordinal(),
+                        (byte) (unlocked ? 0x01 : 0x00)
+                };
+                byte[] challenge = super.receivedResponse.extraData;
+                byte[] signature = authenticationKey.signAuthedCommand(command, challenge);
+
+                eBikeRxCharacteristic.setValue(ByteBuffer.allocate(command.length + signature.length).put(command).put(signature).array());
+                gattClient.writeCharacteristic(eBikeRxCharacteristic);
+            }
+        });
+    }
+
+
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, final int newState) {
         if (newState == BluetoothGatt.STATE_CONNECTED && connecting) {
@@ -103,11 +146,34 @@ public class ESPeBike extends BluetoothGattCallback {
         }
     }
 
+    @Override
+    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        if (characteristic.getUuid().equals(EBIKE_RX_UUID)) {
+            if (status != BluetoothGatt.GATT_SUCCESS) {
+                disconnect(true, "BLE write failed. Status: "+status);
+            }
+            mainActivity.getMainExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mainActivity,"Successful write.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
+        if (characteristic.getUuid().equals(EBIKE_TX_UUID)) {
+            // Process new data
+            processBLEMessage(characteristic.getValue());
+        }
+    }
+
     private void onConnect() {
 
         BluetoothGattService eBikeService = gattClient.getService(EBIKE_SERVICE_UUID);
-        BluetoothGattCharacteristic eBikeTxCharacteristic = (eBikeService == null ? null : eBikeService.getCharacteristic(EBIKE_TX_UUID));
-        BluetoothGattCharacteristic eBikeRxCharacteristic = (eBikeService == null ? null : eBikeService.getCharacteristic(EBIKE_RX_UUID));
+        eBikeTxCharacteristic = (eBikeService == null ? null : eBikeService.getCharacteristic(EBIKE_TX_UUID));
+        eBikeRxCharacteristic = (eBikeService == null ? null : eBikeService.getCharacteristic(EBIKE_RX_UUID));
 
         if (eBikeService == null || eBikeTxCharacteristic == null || eBikeRxCharacteristic == null) {
 
@@ -124,28 +190,83 @@ public class ESPeBike extends BluetoothGattCallback {
             return;
         }
 
+        gattClient.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
         gattClient.setCharacteristicNotification(eBikeTxCharacteristic, true);
         connecting = false;
         connected = true;
 
         mainActivity.eBikeScanner.scanDialog.onConnect();
+        toggleSystemStatsStream(true);
     }
 
 
-    @Override
-    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        if (characteristic.getUuid().equals(EBIKE_RX_UUID)) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
 
-            }else{
-                disconnect(true, "BLE write failed. Status: "+status);
-            }
+    private void processBLEMessage(byte[] payload) {
+
+        if (payload.length < 9)
+            return;  // Too short, ignore. Must contain response byte and two 4 byte error integers.
+
+        ESPeBikeResponse response = new ESPeBikeResponse(payload);
+
+        if (response.hasError) {
+            String message = response.eBikeResponseType + " (0x"+Integer.toHexString(response.eBikeResponseType.ordinal())+") failed!\n\n" +
+                             response.eBikeErrorType + " (0x"+Integer.toHexString(response.eBikeErrorType.ordinal())+")\n\n" +
+                             "ESP-IDF error: (0x"+Integer.toHexString(response.espError)+")";
+            mainActivity.getMainExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(mainActivity).setMessage(message).setTitle("ESP-eBike Error").create().show();
+                }
+            });
+            return;
+        }
+
+        switch (response.eBikeResponseType) {
+
+            case EBIKE_RESPONSE_SYSTEM_STATS_UPDATE:
+                systemStats = new SystemStats(Arrays.copyOfRange(payload, 9, payload.length));
+                mainActivity.updateUI(systemStats);
+            break;
+
+            default:
+                feedCallbacks(response);
+            return;
         }
     }
-    @Override
-    public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-        if (characteristic.getUuid().equals(EBIKE_TX_UUID)) {
-            // Process new data
+
+
+    private void feedCallbacks(ESPeBikeResponse response) {
+
+        for (int i = 0; i < waitingCallbacks.size(); i++) {
+            if (waitingCallbacks.get(i).wantsResponse(response)) {
+                waitingCallbacks.remove(i);
+                return;
+            }
+        }
+
+        mainActivity.getMainExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mainActivity, "Dropped response of type " + response.eBikeResponseType, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private abstract class ESPeBikeBLECallback implements Runnable {
+
+        protected ESPeBikeResponseType responseOfInterest;
+        protected ESPeBikeResponse receivedResponse;
+
+        ESPeBikeBLECallback(ESPeBikeResponseType responseOfInterest) {
+            this.responseOfInterest = responseOfInterest;
+        }
+
+        boolean wantsResponse(ESPeBikeResponse receivedResponse) {
+            if (receivedResponse.eBikeResponseType != responseOfInterest)
+                return false;
+            this.receivedResponse = receivedResponse;
+            this.run();
+            return true;
         }
     }
 }

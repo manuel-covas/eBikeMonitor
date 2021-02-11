@@ -6,6 +6,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Locale;
+
+import pt.manuelcovas.ebikemonitor.datatypes.ESPeBike.CellVoltages;
+import pt.manuelcovas.ebikemonitor.datatypes.ESPeBike.SystemStats;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -23,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
     public static MainActivity getInstance() { return single_instance; }
     public static void setInstance(MainActivity instance) { single_instance = instance; }
 
-    ConstraintLayout speedTab, powerTab, settingsTab;
+    PowerTab powerTab;
+
+    ConstraintLayout speedTabContainer, powerTabContainer, settingsTabContainer;
     BottomNavigationView bottomBar;
 
     EditText authenticationKeyEditText;
@@ -41,16 +49,24 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.setInstance(this);
 
         setContentView(R.layout.activity_main);
-        initUi();
+        initUI();
 
         eBikeScanner = new ESPeBikeScan();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        riding = false;
+    }
 
-    protected void initUi() {
-        speedTab = findViewById(R.id.speed_tab);
-        powerTab = findViewById(R.id.power_tab);
-        settingsTab = findViewById(R.id.settings_tab);
+    protected void initUI() {
+
+        powerTab = new PowerTab(this);
+
+        speedTabContainer = findViewById(R.id.speed_tab);
+        powerTabContainer = findViewById(R.id.power_tab);
+        settingsTabContainer = findViewById(R.id.settings_tab);
 
         bottomBar = findViewById(R.id.bottom_bar);
         bottomBar.setOnNavigationItemSelectedListener(onBottomBarNavigate);
@@ -67,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-            speedTab.setVisibility(View.GONE);
-            powerTab.setVisibility(View.GONE);
-            settingsTab.setVisibility(View.GONE);
+            speedTabContainer.setVisibility(View.GONE);
+            powerTabContainer.setVisibility(View.GONE);
+            settingsTabContainer.setVisibility(View.GONE);
             bottomBar.getMenu().getItem(0).setIcon(R.drawable.ic_twotone_timer_24px);
             bottomBar.getMenu().getItem(1).setIcon(R.drawable.ic_twotone_bolt_24px);
             bottomBar.getMenu().getItem(2).setIcon(R.drawable.ic_twotone_settings_24dp);
@@ -78,17 +94,17 @@ public class MainActivity extends AppCompatActivity {
 
                 case R.id.navigation_speed:
                     bottomBar.getMenu().getItem(0).setIcon(R.drawable.ic_full_timer_24px);
-                    speedTab.setVisibility(View.VISIBLE);
+                    speedTabContainer.setVisibility(View.VISIBLE);
                     break;
 
                 case R.id.navigation_power:
                     bottomBar.getMenu().getItem(1).setIcon(R.drawable.ic_full_bolt_24px);
-                    powerTab.setVisibility(View.VISIBLE);
+                    powerTabContainer.setVisibility(View.VISIBLE);
                     break;
 
                 case R.id.navigation_settings:
                     bottomBar.getMenu().getItem(2).setIcon(R.drawable.ic_full_settings_24px);
-                    settingsTab.setVisibility(View.VISIBLE);
+                    settingsTabContainer.setVisibility(View.VISIBLE);
                     break;
             }
 
@@ -113,5 +129,19 @@ public class MainActivity extends AppCompatActivity {
     public void setRidingActivity(RidingActivity r) {
         ridingActivity = r;
         riding = true;
+    }
+
+
+    public void updateUI(SystemStats systemStats) {
+        getMainExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                if (riding) {
+                    ridingActivity.updateUI(systemStats);
+                }else{
+                    powerTab.updateUI(systemStats);
+                }
+            }
+        });
     }
 }

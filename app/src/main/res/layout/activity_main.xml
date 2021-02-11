@@ -47,7 +47,7 @@
             android:id="@+id/power_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +55,7 @@
 
 
             <ImageView
-                android:id="@+id/pack_battery"
+                android:id="@+id/pack_voltage_icon_main"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_marginTop="16dp"
@@ -71,16 +71,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:text="18.0"
+                android:text="00.00"
                 android:textColor="@color/text_color_primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/pack_battery"
-                app:layout_constraintStart_toStartOf="@+id/pack_battery"
-                app:layout_constraintTop_toBottomOf="@+id/pack_battery" />
+                app:layout_constraintEnd_toEndOf="@+id/pack_voltage_icon_main"
+                app:layout_constraintStart_toStartOf="@+id/pack_voltage_icon_main"
+                app:layout_constraintTop_toBottomOf="@+id/pack_voltage_icon_main" />
 
             <TextView
-                android:id="@+id/pack_voltage_main_unit"
+                android:id="@+id/pack_voltage_unit_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="V"
@@ -103,12 +103,12 @@
                 app:tint="@color/colorAccent" />
 
             <TextView
-                android:id="@+id/pack_amperage"
+                android:id="@+id/pack_current_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:text="00.0"
+                android:text="000.00"
                 android:textColor="@color/text_color_primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -117,16 +117,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/pack_bolt" />
 
             <TextView
-                android:id="@+id/pack_amperage_unit"
+                android:id="@+id/pack_current_unit_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="A"
                 android:textColor="@color/text_color_primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/pack_amperage"
-                app:layout_constraintStart_toEndOf="@+id/pack_amperage"
-                app:layout_constraintTop_toTopOf="@+id/pack_amperage" />
+                app:layout_constraintBottom_toBottomOf="@+id/pack_current_main"
+                app:layout_constraintStart_toEndOf="@+id/pack_current_main"
+                app:layout_constraintTop_toTopOf="@+id/pack_current_main" />
 
             <View
                 android:id="@+id/divider"
@@ -182,7 +182,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="3.00"
+                    android:text="0.000"
                     android:textColor="@color/text_color_primary"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -263,7 +263,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="3.00"
+                    android:text="0.000"
                     android:textColor="@color/text_color_primary"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -343,7 +343,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="3.00"
+                    android:text="0.000"
                     android:textColor="@color/text_color_primary"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -424,7 +424,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="3.00"
+                    android:text="0.000"
                     android:textColor="@color/text_color_primary"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -521,7 +521,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="3.00"
+                    android:text="0.000"
                     android:textColor="@color/text_color_primary"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -601,7 +601,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="3.00"
+                    android:text="0.000"
                     android:textColor="@color/text_color_primary"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -632,7 +632,7 @@
             android:id="@+id/settings_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

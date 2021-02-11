@@ -57,9 +57,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="0.00"
+                android:text="00.00"
                 android:textColor="@color/text_color_primary"
-                android:textSize="90sp"
+                android:textSize="80sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -111,7 +111,7 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/current_progress"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/current_text"
+                app:layout_constraintTop_toTopOf="@+id/pack_current_riding"
                 app:srcCompat="@drawable/ic_full_bolt_24px"
                 app:tint="@color/colorAccent" />
 
@@ -122,20 +122,20 @@
                 android:layout_marginStart="8dp"
                 android:text="A"
                 android:textSize="22sp"
-                app:layout_constraintBottom_toBottomOf="@+id/current_text"
-                app:layout_constraintStart_toEndOf="@+id/current_text"
-                app:layout_constraintTop_toTopOf="@+id/current_text"
+                app:layout_constraintBottom_toBottomOf="@+id/pack_current_riding"
+                app:layout_constraintStart_toEndOf="@+id/pack_current_riding"
+                app:layout_constraintTop_toTopOf="@+id/pack_current_riding"
                 app:layout_constraintVertical_bias="0.78" />
 
             <TextView
-                android:id="@+id/current_text"
+                android:id="@+id/pack_current_riding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="0.00"
+                android:text="00.00"
                 android:textColor="@color/text_color_primary"
-                android:textSize="90sp"
+                android:textSize="80sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -155,7 +155,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/current_text" />
+                app:layout_constraintTop_toBottomOf="@+id/pack_current_riding" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -175,15 +175,15 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/pack_level_icon"
+                android:id="@+id/pack_voltage_icon_riding"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/pack_percentage"
-                app:layout_constraintEnd_toStartOf="@+id/pack_percentage"
+                app:layout_constraintBottom_toBottomOf="@+id/pack_percentage_riding"
+                app:layout_constraintEnd_toStartOf="@+id/pack_percentage_riding"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/pack_percentage"
+                app:layout_constraintTop_toTopOf="@+id/pack_percentage_riding"
                 app:srcCompat="@drawable/ic_full_battery_0_24px"
                 app:tint="@color/colorAccent" />
 
@@ -194,19 +194,19 @@
                 android:layout_marginStart="8dp"
                 android:text="%"
                 android:textSize="22sp"
-                app:layout_constraintBottom_toBottomOf="@+id/pack_percentage"
-                app:layout_constraintStart_toEndOf="@+id/pack_percentage"
-                app:layout_constraintTop_toTopOf="@+id/pack_percentage"
+                app:layout_constraintBottom_toBottomOf="@+id/pack_percentage_riding"
+                app:layout_constraintStart_toEndOf="@+id/pack_percentage_riding"
+                app:layout_constraintTop_toTopOf="@+id/pack_percentage_riding"
                 app:layout_constraintVertical_bias="0.78" />
 
             <TextView
-                android:id="@+id/pack_percentage"
+                android:id="@+id/pack_percentage_riding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:text="0.00"
+                android:text="00.00"
                 android:textColor="@color/text_color_primary"
                 android:textSize="90sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -221,7 +221,7 @@
                 android:text="Lowest cell:"
                 android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="@+id/battery_card_text_2"
-                app:layout_constraintTop_toBottomOf="@+id/pack_percentage" />
+                app:layout_constraintTop_toBottomOf="@+id/pack_percentage_riding" />
 
             <TextView
                 android:id="@+id/battery_card_text_2"
@@ -250,7 +250,7 @@
                 android:id="@+id/lowest_cell"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0.00"
+                android:text="0.000"
                 app:layout_constraintBottom_toBottomOf="@+id/battery_card_text_1"
                 app:layout_constraintStart_toStartOf="@+id/highest_cell"
                 app:layout_constraintTop_toTopOf="@+id/battery_card_text_1" />
@@ -259,7 +259,7 @@
                 android:id="@+id/highest_cell"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0.00"
+                android:text="0.000"
                 app:layout_constraintBottom_toBottomOf="@+id/battery_card_text_2"
                 app:layout_constraintStart_toStartOf="@+id/pack_voltage_riding"
                 app:layout_constraintTop_toTopOf="@+id/battery_card_text_2" />
@@ -305,7 +305,7 @@
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ride_exit_button"
+        android:id="@+id/ride_button_riding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
@@ -320,6 +320,40 @@
         app:layout_constraintTop_toTopOf="@+id/battery_card"
         app:pressedTranslationZ="8dp"
         app:srcCompat="@drawable/ic_round_motorcycle_24px" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/lock_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:clickable="true"
+        android:translationZ="7dp"
+        app:backgroundTint="@color/colorAccentDark"
+        app:elevation="16dp"
+        app:fabCustomSize="64dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/battery_card"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/battery_card"
+        app:pressedTranslationZ="8dp"
+        app:srcCompat="@drawable/ic_full_locked_24dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/unlock_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:clickable="true"
+        android:translationZ="7dp"
+        app:backgroundTint="@color/colorAccent"
+        app:elevation="16dp"
+        app:fabCustomSize="64dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/battery_card"
+        app:layout_constraintStart_toEndOf="@+id/lock_button"
+        app:layout_constraintTop_toTopOf="@+id/battery_card"
+        app:pressedTranslationZ="8dp"
+        app:srcCompat="@drawable/ic_full_unlocked_black_24dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
